@@ -674,6 +674,70 @@ class NPUModelRunner(GPUModelRunner):
 
         return max_tokens_across_dp, num_tokens_after_padding, synced_cudagraph_mode
 
+    def _sync_metadata_across_dp_async(
+        self,
+        num_tokens: int,
+        cudagraph_mode: CUDAGraphMode = CUDAGraphMode.NONE,
+        allow_dp_padding: bool = False,
+    ) -> tuple[dist.Work, torch.Tensor, str, bool]:
+        device_str, group = (
+            ("npu", get_dp_group().device_group)
+            if self.ascend_config.dp_allreduce_on_npu
+            else ("cpu", get_dp_group().cpu_group)
+        )
+        packed_tensor = torch.zeros(2, self.dp_size, device=device_str, dtype=torch.int32)
+        packed_tensor[0][self.dp_rank] = num_tokens
+        packed_tensor[1][self.dp_rank] = cudagraph_mode.value
+        work = dist.all_reduce(packed_tensor, group=group, async_op=True)
+        return work, packed_tensor, device_str, allow_dp_padding
+
+    def _finalize_dp_allreduce(
+        self,
+        dp_allreduce_handle: tuple,
+    ) -> tuple[CUDAGraphMode, BatchDescriptor, torch.Tensor | None]:
+        (
+            (work, packed_tensor, device_str, allow_dp_padding),
+            has_lora,
+            uniform_decode,
+            num_active_loras,
+            force_eager,
+            use_cascade_attn,
+            has_encoder_output,
+        ) = dp_allreduce_handle
+        work.wait()
+        if device_str == "npu":
+            packed_tensor = packed_tensor.cpu()
+
+        num_tokens_across_dp = packed_tensor[0, :]
+        max_tokens_across_dp = int(num_tokens_across_dp.max().item())
+        synced_cudagraph_mode = CUDAGraphMode(_post_process_cudagraph_mode(packed_tensor))
+
+        if allow_dp_padding:
+            num_tokens_after_padding = torch.tensor(
+                [max_tokens_across_dp] * packed_tensor.shape[1], device="cpu", dtype=torch.int32
+            )
+        else:
+            num_tokens_after_padding = num_tokens_across_dp.cpu()
+
+        dp_rank = self.parallel_config.data_parallel_rank
+        num_tokens_padded = int(num_tokens_after_padding[dp_rank].item())
+
+        if force_eager:
+            cudagraph_mode = CUDAGraphMode.NONE
+            batch_descriptor = BatchDescriptor(num_tokens_padded)
+        else:
+            cudagraph_mode, batch_descriptor = self.cudagraph_dispatcher.dispatch(
+                num_tokens=num_tokens_padded,
+                has_lora=has_lora,
+                uniform_decode=uniform_decode,
+                valid_modes={synced_cudagraph_mode},
+                invalid_modes={CUDAGraphMode.FULL} if (use_cascade_attn or has_encoder_output) else None,
+                num_active_loras=num_active_loras,
+            )
+        assert batch_descriptor.num_tokens == num_tokens_padded
+
+        return cudagraph_mode, batch_descriptor, num_tokens_after_padding
+
     def get_model(self) -> nn.Module:
         # get raw model out of the aclgraph wrapper.
         if isinstance(self.model, ACLGraphWrapper):
@@ -2028,16 +2092,6 @@ class NPUModelRunner(GPUModelRunner):
                 num_scheduled_tokens_np = np.array(tokens, dtype=np.int32)
                 max_num_scheduled_tokens = int(num_scheduled_tokens_np.max())
 
-                (
-                    logits_indices,
-                    spec_decode_metadata,
-                    total_num_scheduled_tokens,
-                    num_scheduled_tokens_compressed_list,
-                ) = self._prepare_inputs(
-                    scheduler_output,
-                    num_scheduled_tokens_np,
-                )
-
                 num_tokens_unpadded = scheduler_output.total_num_scheduled_tokens
                 if self.pcp_size > 1:
                     num_tokens_unpadded = self.pcp_manager.total_num_sampled_tokens_pcp
@@ -2057,6 +2111,7 @@ class NPUModelRunner(GPUModelRunner):
                     should_ubatch,
                     num_tokens_across_dp,
                     cudagraph_stats,
+                    dp_allreduce_handle,
                 ) = self._determine_batch_execution_and_padding(
                     num_tokens=num_tokens_unpadded,
                     num_reqs=num_reqs,
@@ -2065,7 +2120,23 @@ class NPUModelRunner(GPUModelRunner):
                     use_cascade_attn=cascade_attn_prefix_lens is not None,
                     force_eager=self.model_config.enforce_eager,
                     num_encoder_reqs=len(scheduler_output.scheduled_encoder_inputs),
+                    async_dp_allreduce=True,
                 )
+
+                (
+                    logits_indices,
+                    spec_decode_metadata,
+                    total_num_scheduled_tokens,
+                    num_scheduled_tokens_compressed_list,
+                ) = self._prepare_inputs(
+                    scheduler_output,
+                    num_scheduled_tokens_np,
+                )
+
+                if dp_allreduce_handle is not None:
+                    cudagraph_mode, batch_desc, num_tokens_across_dp = self._finalize_dp_allreduce(
+                        dp_allreduce_handle,
+                    )
 
                 logger.debug(
                     "Running batch with cudagraph_mode: %s, batch_descriptor: %s, "
@@ -2858,7 +2929,8 @@ class NPUModelRunner(GPUModelRunner):
         force_has_lora: bool | None = None,
         force_num_active_loras: int | None = None,
         num_encoder_reqs: int = 0,
-    ) -> tuple[CUDAGraphMode, BatchDescriptor, bool, torch.Tensor | None, CUDAGraphStat | None]:
+        async_dp_allreduce: bool = False,
+    ) -> tuple[CUDAGraphMode, BatchDescriptor, bool, torch.Tensor | None, CUDAGraphStat | None, tuple | None]:
         num_tokens_padded = self._pad_for_sequence_parallelism(num_tokens)
         is_all_decode = np.all(self.input_batch.num_computed_tokens_cpu[:num_reqs] > 0)
         uniform_decode = (
@@ -2903,25 +2975,58 @@ class NPUModelRunner(GPUModelRunner):
         # Extra coordination when running data-parallel since we need to coordinate
         # across ranks
         should_ubatch, num_tokens_across_dp = False, None
+        dp_allreduce_handle = None
         if self.vllm_config.parallel_config.data_parallel_size > 1:
-            _, num_tokens_across_dp, synced_cudagraph_mode = self._sync_metadata_across_dp(
-                num_tokens=num_tokens_padded,
-                cudagraph_mode=cudagraph_mode,
-                allow_dp_padding=(cudagraph_mode != CUDAGraphMode.NONE) or enable_sp(self.vllm_config),
-            )
+            allow_dp = (cudagraph_mode != CUDAGraphMode.NONE) or enable_sp(self.vllm_config)
 
-            # Extract DP padding if there is any
-            if num_tokens_across_dp is not None:
-                dp_rank = self.parallel_config.data_parallel_rank
-                num_tokens_padded = int(num_tokens_across_dp[dp_rank].item())
-                # Re-dispatch with DP padding
-                cudagraph_mode, batch_descriptor = dispatch_cudagraph(
-                    num_tokens_padded,
-                    valid_modes={synced_cudagraph_mode},
+            if async_dp_allreduce:
+                if should_skip_allreduce_across_dp_group(self.vllm_config, is_draft_model=False):
+                    _, num_tokens_across_dp, synced_cudagraph_mode = self._sync_metadata_across_dp(
+                        num_tokens=num_tokens_padded,
+                        cudagraph_mode=cudagraph_mode,
+                        allow_dp_padding=allow_dp,
+                    )
+                    if num_tokens_across_dp is not None:
+                        dp_rank = self.parallel_config.data_parallel_rank
+                        num_tokens_padded = int(num_tokens_across_dp[dp_rank].item())
+                        cudagraph_mode, batch_descriptor = dispatch_cudagraph(
+                            num_tokens_padded,
+                            valid_modes={synced_cudagraph_mode},
+                        )
+                        assert batch_descriptor.num_tokens == num_tokens_padded
+                else:
+                    dp_allreduce_handle = (
+                        self._sync_metadata_across_dp_async(
+                            num_tokens=num_tokens_padded,
+                            cudagraph_mode=cudagraph_mode,
+                            allow_dp_padding=allow_dp,
+                        ),
+                        has_lora,
+                        uniform_decode,
+                        num_active_loras,
+                        force_eager,
+                        use_cascade_attn,
+                        has_encoder_output,
+                    )
+            else:
+                _, num_tokens_across_dp, synced_cudagraph_mode = self._sync_metadata_across_dp(
+                    num_tokens=num_tokens_padded,
+                    cudagraph_mode=cudagraph_mode,
+                    allow_dp_padding=allow_dp,
                 )
-                # Assert to make sure the agreed upon token count is correct otherwise
-                # num_tokens_across_dp will no-longer be valid
-                assert batch_descriptor.num_tokens == num_tokens_padded
+
+                # Extract DP padding if there is any
+                if num_tokens_across_dp is not None:
+                    dp_rank = self.parallel_config.data_parallel_rank
+                    num_tokens_padded = int(num_tokens_across_dp[dp_rank].item())
+                    # Re-dispatch with DP padding
+                    cudagraph_mode, batch_descriptor = dispatch_cudagraph(
+                        num_tokens_padded,
+                        valid_modes={synced_cudagraph_mode},
+                    )
+                    # Assert to make sure the agreed upon token count is correct otherwise
+                    # num_tokens_across_dp will no-longer be valid
+                    assert batch_descriptor.num_tokens == num_tokens_padded
         cudagraph_stats = None
         if self.vllm_config.observability_config.cudagraph_metrics:
             cudagraph_stats = CUDAGraphStat(
@@ -2937,6 +3042,7 @@ class NPUModelRunner(GPUModelRunner):
             should_ubatch,
             num_tokens_across_dp,
             cudagraph_stats,
+            dp_allreduce_handle,
         )
 
     def _build_attention_metadata(
@@ -3360,7 +3466,7 @@ class NPUModelRunner(GPUModelRunner):
         self.query_lens = torch.from_numpy(num_scheduled_tokens)
         num_tokens_unpadded = int(num_scheduled_tokens.sum())
         num_sampled_tokens = np.ones(num_reqs, dtype=np.int32)
-        _cudagraph_mode, batch_desc, _, num_tokens_across_dp, _ = self._determine_batch_execution_and_padding(
+        _cudagraph_mode, batch_desc, _, num_tokens_across_dp, _, _ = self._determine_batch_execution_and_padding(
             num_tokens=num_tokens_unpadded,
             num_reqs=num_reqs,
             num_scheduled_tokens_np=num_scheduled_tokens,
