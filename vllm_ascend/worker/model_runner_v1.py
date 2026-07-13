@@ -262,6 +262,7 @@ class ExecuteModelState(NamedTuple):
     ec_connector_output: "ECConnectorOutput | None"
     cudagraph_stats: CUDAGraphStat | None
     batch_desc: BatchDescriptor
+    logits_indices: torch.Tensor | None = None
 
 
 class NPUModelRunner(GPUModelRunner):
@@ -2506,6 +2507,7 @@ class NPUModelRunner(GPUModelRunner):
                 ec_connector_output,
                 cudagraph_stats,
                 batch_desc,
+                logits_indices=logits_indices,
             )
             self.kv_connector_output = kv_connector_output
 
@@ -2551,6 +2553,7 @@ class NPUModelRunner(GPUModelRunner):
             ec_connector_output,
             cudagraph_stats,
             batch_desc,
+            _logits_indices,
         ) = self.execute_model_state
         # Clear ephemeral state.
         self.execute_model_state = None
