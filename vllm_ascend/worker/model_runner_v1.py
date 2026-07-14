@@ -3487,6 +3487,13 @@ class NPUModelRunner(GPUModelRunner):
             # the attention metadata in directly), and therefore does not want to use
             # padded attention metadata.
             spec_decode_common_attn_metadata = spec_decode_common_attn_metadata.unpadded(num_tokens, num_reqs)
+        if self.use_async_scheduling and spec_decode_common_attn_metadata is not None:
+            spec_decode_common_attn_metadata.query_start_loc = (
+                spec_decode_common_attn_metadata.query_start_loc.clone()
+            )
+            spec_decode_common_attn_metadata.query_start_loc_cpu = (
+                spec_decode_common_attn_metadata.query_start_loc_cpu.clone()
+            )
         return attn_metadata, spec_decode_common_attn_metadata
 
     def _should_build_dummy_attn_metadata(
