@@ -141,6 +141,11 @@ class EagleAclGraphManager(SpeculatorCudaGraphManager):
 
         draft_attn_metadatas = self.speculator.build_draft_attn_metadatas(desc.num_reqs, self.is_draft_model_prefill)
 
+        # Wait for the replay stream before updating graph params, mirroring
+        # ModelAclGraphManager (PR #12944), else the update races the replay and
+        # deadlocks the HCCL collective under MTP s
+        # TODO: dflash has the same race; extract wait_stream + update_full_graph_params into a shared helper
+        self.speculator.update_stream.wait_stream(torch.npu.current_stream())
         ret = super().run_fullgraph(desc)
 
         # refer to vllm.v1.worker.gpu.dp_utils.sync_cudagraph_and_dp_padding to
