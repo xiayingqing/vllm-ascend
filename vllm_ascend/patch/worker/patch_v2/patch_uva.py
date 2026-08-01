@@ -134,6 +134,10 @@ class UvaBufferWrapper:
         self._np: np.ndarray = self._cpu.numpy()
         self._modified_indices: set[int] = set()
         self._uva: torch.Tensor = self._cpu if is_uva_available() else torch.zeros_like(self._cpu, device="npu")
+        if not is_uva_available():
+            # Pinned staging buffer to decouple DMA reads from __setitem__
+            # writes, avoiding bus contention on buffer reuse.
+            self._staging: torch.Tensor = torch.zeros(size, dtype=dtype, device="cpu", pin_memory=True)
 
     def _mark_cpu_modified(self, key: int):
         self._modified_indices.add(key)
@@ -153,16 +157,12 @@ class UvaBufferWrapper:
             dirty_rows = sorted(self._modified_indices)
             n_dirty = len(dirty_rows)
             if dirty_rows[0] == 0 and dirty_rows[-1] == n_dirty - 1:
-                # Common path: dirty rows are a contiguous prefix [0..n-1].
-                # This is always the case when copy_to_uva writes via
-                # dst[:n] = x.  Contiguous slice copy_ keeps the CPU source
-                # pinned and enables true async DMA without an intermediate
-                # tensor or stream sync.
-                self._uva[:n_dirty].copy_(self._cpu[:n_dirty], non_blocking=True)
+                # Contiguous prefix [0..n-1]: use slice copy_ via staging
+                # for true async DMA without bus contention.
+                self._staging[:n_dirty].copy_(self._cpu[:n_dirty])
+                self._uva[:n_dirty].copy_(self._staging[:n_dirty], non_blocking=True)
             else:
                 # Sparse modification pattern — fall back to indexed copy.
-                # Explicitly re-pin the CPU source so that non_blocking is
-                # not silently degraded.
                 src = self._cpu[dirty_rows].pin_memory()
                 self._uva[dirty_rows] = src.to(device="npu", non_blocking=True)
             self._modified_indices.clear()
