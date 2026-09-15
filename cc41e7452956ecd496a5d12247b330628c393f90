@@ -1,0 +1,43 @@
+tests/ut/worker/test_model_runner_v1.py
+  s_fc6f3c5e455932::t_550c6af9327452 1321-1322,1324,1326-1329
+  s_fc6f3c5e455932::t_0ceddb2f3b5e24 1446-1447
+  s_fc6f3c5e455932::t_24af2d76e629b8 1276-1320,1323,1325,1330-1331
+vllm_ascend/worker/model_runner_v1.py
+  s_fc6f3c5e455932::t_8b1d47b00338d5 593-596
+  s_fc6f3c5e455932::t_4fae64c6c2c983 1602-1620
+  s_fc6f3c5e455932::t_16d6eb6511f6c0 1667-1671
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "cc41e7452956ecd496a5d12247b330628c393f90",
+  "prompts": {},
+  "humans": {
+    "h_021d910d513d52": {
+      "author": "xiayingqing <xiayingqing@huawei.com>"
+    }
+  },
+  "sessions": {
+    "s_fc6f3c5e455932": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a9a1db4c1e8694f53354817",
+        "model": "glm-5.3__max"
+      },
+      "human_author": "xiayingqing <xiayingqing@huawei.com>",
+      "custom_attributes": {
+        "runtime_client": "trae-tob-git-ai",
+        "edit_kind": "file_edit",
+        "tool_type": "agent",
+        "source_scene": "unknown",
+        "tool_id": "Edit",
+        "session_id": "6a9a1db4c1e8694f53354817",
+        "dedupe_key": "6a9a1db4c1e8694f53354817:6a9a3609c1e8694f53354a6c:afterEdit:01ac9fbe",
+        "operation_id": "6a9a3609c1e8694f53354a6c",
+        "external_session_id": "6a9a1db4c1e8694f53354817",
+        "client_type": "ide",
+        "tool_use_id": "6a9a3609c1e8694f53354a6c"
+      }
+    }
+  }
+}
