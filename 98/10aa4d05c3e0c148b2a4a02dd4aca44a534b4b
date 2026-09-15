@@ -1,0 +1,32 @@
+tests/e2e/nightly/single_node/models/configs/Kimi-K2.5.yaml
+  s_2ad9e021554021::t_1890ac294db773 69,71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "9810aa4d05c3e0c148b2a4a02dd4aca44a534b4b",
+  "prompts": {},
+  "sessions": {
+    "s_2ad9e021554021": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6aa509beea331931a8805b56",
+        "model": "glm-5.3-flash__max"
+      },
+      "human_author": "xiayingqing <xiayingqing@huawei.com>",
+      "custom_attributes": {
+        "runtime_client": "trae-tob-git-ai",
+        "operation_id": "6aa92c3bea331931a88075ee",
+        "client_type": "ide",
+        "dedupe_key": "6aa509beea331931a8805b56:6aa92c3bea331931a88075ee:afterEdit:ceca766b",
+        "external_session_id": "6aa509beea331931a8805b56",
+        "source_scene": "unknown",
+        "session_id": "6aa509beea331931a8805b56",
+        "edit_kind": "file_edit",
+        "tool_type": "agent",
+        "tool_use_id": "6aa92c3bea331931a88075ee",
+        "tool_id": "Edit"
+      }
+    }
+  }
+}
