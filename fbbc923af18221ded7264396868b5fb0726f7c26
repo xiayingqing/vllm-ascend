@@ -1,0 +1,32 @@
+tests/ut/worker/test_model_runner_v1.py
+  s_fc6f3c5e455932::t_df90f187892468 1306-1307
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "fbbc923af18221ded7264396868b5fb0726f7c26",
+  "prompts": {},
+  "sessions": {
+    "s_fc6f3c5e455932": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a9a1db4c1e8694f53354817",
+        "model": "glm-5.3__max"
+      },
+      "human_author": "xiayingqing <xiayingqing@huawei.com>",
+      "custom_attributes": {
+        "external_session_id": "6a9a1db4c1e8694f53354817",
+        "tool_id": "Edit",
+        "tool_use_id": "6a9a3f50c1e8694f53354b1b",
+        "source_scene": "unknown",
+        "dedupe_key": "6a9a1db4c1e8694f53354817:6a9a3f50c1e8694f53354b1b:afterEdit:01ac9fbe",
+        "operation_id": "6a9a3f50c1e8694f53354b1b",
+        "client_type": "ide",
+        "session_id": "6a9a1db4c1e8694f53354817",
+        "tool_type": "agent",
+        "edit_kind": "file_edit",
+        "runtime_client": "trae-tob-git-ai"
+      }
+    }
+  }
+}
