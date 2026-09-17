@@ -1,0 +1,19 @@
+.zz_push_test
+  s_2ad9e021554021::t_1f1f9bb8407693 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "6ae24f280b67c2032bd6c2c0e4dc944d92ee2fbf",
+  "prompts": {},
+  "sessions": {
+    "s_2ad9e021554021": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6aa509beea331931a8805b56",
+        "model": "glm-5.3-flash__max"
+      },
+      "human_author": "xiayingqing <xiayingqing@huawei.com>"
+    }
+  }
+}
