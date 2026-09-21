@@ -1,0 +1,49 @@
+vllm_ascend/worker/v2/attn_utils.py
+  s_9b4b71451914d5::t_df10769bd5cba0 1006
+  s_9b4b71451914d5::t_bb6de4debafd23 36,43-53
+  s_9b4b71451914d5::t_2f95149280bf20 84-91
+  s_9b4b71451914d5::t_7fcc899c667e7c 1041
+  s_9b4b71451914d5::t_34c8249c7440e4 967-973,979-989
+  s_9b4b71451914d5::t_6b92c54cf4c51b 1082
+  s_9b4b71451914d5::t_c52d3dfa42c09b 965-966,975-976,990-993
+  s_9b4b71451914d5::t_b8c608e78bad4e 977
+  s_9b4b71451914d5::t_3e555e90824f04 632
+  s_9b4b71451914d5::t_3dc9ef38460acf 1110-1209
+  s_9b4b71451914d5::t_c97592ee34a8f5 1210
+  s_9b4b71451914d5::t_e4d839272b3115 668-687
+  s_9b4b71451914d5::t_c09eae661395cb 994
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "513dc74175fd93a9874bc495e4ffd05b1a957ed3",
+  "prompts": {},
+  "humans": {
+    "h_021d910d513d52": {
+      "author": "xiayingqing <xiayingqing@huawei.com>"
+    }
+  },
+  "sessions": {
+    "s_9b4b71451914d5": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6aa7ae1eea331931a88069ee",
+        "model": "glm-5.3-flash__max"
+      },
+      "human_author": "xiayingqing <xiayingqing@huawei.com>",
+      "custom_attributes": {
+        "tool_type": "agent",
+        "source_scene": "unknown",
+        "session_id": "6aa7ae1eea331931a88069ee",
+        "runtime_client": "trae-tob-git-ai",
+        "tool_use_id": "6ab0ed0eea331931a8809a79",
+        "tool_id": "Edit",
+        "external_session_id": "6aa7ae1eea331931a88069ee",
+        "edit_kind": "file_edit",
+        "dedupe_key": "6aa7ae1eea331931a88069ee:6ab0ed0eea331931a8809a79:afterEdit:3e82072c",
+        "operation_id": "6ab0ed0eea331931a8809a79",
+        "client_type": "ide"
+      }
+    }
+  }
+}
