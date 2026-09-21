@@ -1,0 +1,24 @@
+vllm_ascend/worker/v2/attn_utils.py
+  s_9b4b71451914d5::t_730d734b19e267 36,61-71,84-91,632,668-687,965-973,975,977-992,1004,1039,1080,1108-1202
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "cc073c079ece51ec58f2b5451656d758625816ab",
+  "prompts": {},
+  "humans": {
+    "h_021d910d513d52": {
+      "author": "xiayingqing <xiayingqing@huawei.com>"
+    }
+  },
+  "sessions": {
+    "s_9b4b71451914d5": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6aa7ae1eea331931a88069ee",
+        "model": "glm-5.3-flash__max"
+      },
+      "human_author": "xiayingqing <xiayingqing@huawei.com>"
+    }
+  }
+}
