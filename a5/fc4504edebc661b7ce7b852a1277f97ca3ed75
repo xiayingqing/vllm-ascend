@@ -1,0 +1,40 @@
+vllm_ascend/worker/v2/aclgraph_utils.py
+  s_97525358140894::t_1f51f99e536f7b 213-219
+  s_97525358140894::t_fe770b6bd9e23a 119-148,211-212
+vllm_ascend/models/qwen4_exp/model.py
+  s_97525358140894::t_c36c9600f0f364 77-79,84-89
+  s_97525358140894::t_02187d9ef0e31a 74-76
+vllm_ascend/models/qwen4_exp/model_state.py
+  s_97525358140894::t_5d629d6d0b6c26 1-40
+vllm_ascend/models/qwen4_exp/qsa.py
+  s_97525358140894::t_e57a0548274e07 449-469
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "a5fc4504edebc661b7ce7b852a1277f97ca3ed75",
+  "prompts": {},
+  "sessions": {
+    "s_97525358140894": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6ab0fa6bea331931a8809b38",
+        "model": "glm-5.3-flash__max"
+      },
+      "human_author": "xiayingqing <xiayingqing@huawei.com>",
+      "custom_attributes": {
+        "session_id": "6ab0fa6bea331931a8809b38",
+        "operation_id": "6ab10c68ea331931a8809d50",
+        "tool_type": "agent",
+        "dedupe_key": "6ab0fa6bea331931a8809b38:6ab10c68ea331931a8809d50:afterEdit:e2dcaa01",
+        "tool_id": "Edit",
+        "edit_kind": "file_edit",
+        "tool_use_id": "6ab10c68ea331931a8809d50",
+        "client_type": "ide",
+        "source_scene": "unknown",
+        "external_session_id": "6ab0fa6bea331931a8809b38",
+        "runtime_client": "trae-tob-git-ai"
+      }
+    }
+  }
+}
