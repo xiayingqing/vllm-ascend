@@ -1,0 +1,62 @@
+vllm_ascend/attention/sfa_v1.py
+  s_a2b59fe8334e18::t_137dc24d021517 31
+  s_a2b59fe8334e18::t_f7b6ff5a6f38f3 492-496
+tests/ut/attention/test_seq_lens_requirement.py
+  s_a2b59fe8334e18::t_3f9a674eed7cad 1-157
+vllm_ascend/attention/mla_v1.py
+  s_a2b59fe8334e18::t_0fd4c4c8b6ece7 35
+  s_a2b59fe8334e18::t_2600e965e3c17b 263-266
+vllm_ascend/models/minimax_m3/msa_m3.py
+  s_a2b59fe8334e18::t_242d77f7bf8332 778-782
+  s_a2b59fe8334e18::t_22b75b951b943c 41
+  s_a2b59fe8334e18::t_d390cfc5359801 248-252
+vllm_ascend/worker/v2/model_runner.py
+  s_a2b59fe8334e18::t_eb3454947b0978 60-63
+  s_a2b59fe8334e18::t_ef0fffe308993a 317-327
+  s_a2b59fe8334e18::t_15704d98aa4c13 808-829,851-853,869-871,883-889,891
+  s_a2b59fe8334e18::t_5359125e45847e 205-215
+vllm_ascend/attention/indexer.py
+  s_a2b59fe8334e18::t_c8e2876abf0248 517-521
+  s_a2b59fe8334e18::t_711b9036d47052 37
+vllm_ascend/attention/utils.py
+  s_a2b59fe8334e18::t_ca8ad2c1a68cd9 111-112
+  s_a2b59fe8334e18::t_7dee4fc4f81946 34-110,113-134
+  s_a2b59fe8334e18::t_4e09db8b8fcd14 12
+vllm_ascend/ops/gdn_attn_builder.py
+  s_a2b59fe8334e18::t_87e6c295651006 35
+  s_a2b59fe8334e18::t_8222a2b09e0fc0 321-325
+vllm_ascend/attention/attention_v1.py
+  s_a2b59fe8334e18::t_3c681c39b8fbda 49
+  s_a2b59fe8334e18::t_617f6a59e369c9 219-223
+vllm_ascend/attention/dsa_v1.py
+  s_a2b59fe8334e18::t_694c1a8da77a12 598-602
+  s_a2b59fe8334e18::t_d77299cd3a6f33 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "8942a28b7dcca276faf65ea77cafc58b2e2cfbe3",
+  "prompts": {},
+  "sessions": {
+    "s_a2b59fe8334e18": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a85672487ac797223807e7c",
+        "model": "glm-5.3__max"
+      },
+      "human_author": "XYQ <xiayingqing0928@163.com>",
+      "custom_attributes": {
+        "tool_name": "Edit",
+        "runtime_client": "trae-tob-git-ai",
+        "client_type": "ide",
+        "edit_kind": "file_edit",
+        "display_model_name": "GLM-5.3",
+        "operation_id": "6ab9e8a5656810681df3b868",
+        "session_id": "6a85672487ac797223807e7c",
+        "source_scene": "agent",
+        "tool_use_id": "6ab9e8a5656810681df3b868",
+        "external_session_id": "6a85672487ac797223807e7c"
+      }
+    }
+  }
+}
