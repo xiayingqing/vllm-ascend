@@ -1,0 +1,33 @@
+vllm_ascend/worker/v2/model_runner.py
+  s_a2b59fe8334e18::t_fd15f5e97160e1 833
+tests/ut/attention/test_seq_lens_requirement.py
+  s_a2b59fe8334e18::t_e906cc9d16f9f8 54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "8cb38ae0242f877583f27d9d30bc12778f55dfd9",
+  "prompts": {},
+  "sessions": {
+    "s_a2b59fe8334e18": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a85672487ac797223807e7c",
+        "model": "glm-5.3__max"
+      },
+      "human_author": "XYQ <xiayingqing0928@163.com>",
+      "custom_attributes": {
+        "display_model_name": "GLM-5.3",
+        "client_type": "ide",
+        "tool_use_id": "6abb6544656810681df3bc99",
+        "tool_name": "Edit",
+        "source_scene": "agent",
+        "session_id": "6a85672487ac797223807e7c",
+        "runtime_client": "trae-tob-git-ai",
+        "external_session_id": "6a85672487ac797223807e7c",
+        "edit_kind": "file_edit",
+        "operation_id": "6abb6544656810681df3bc99"
+      }
+    }
+  }
+}
