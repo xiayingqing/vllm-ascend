@@ -20,16 +20,16 @@ tests/ut/attention/test_seq_lens_requirement.py
       },
       "human_author": "XYQ <xiayingqing0928@163.com>",
       "custom_attributes": {
-        "runtime_client": "trae-tob-git-ai",
-        "external_session_id": "6a85672487ac797223807e7c",
-        "client_type": "ide",
-        "edit_kind": "file_edit",
-        "operation_id": "6abb32a7656810681df3bc2c",
-        "session_id": "6a85672487ac797223807e7c",
         "display_model_name": "GLM-5.3",
+        "tool_name": "Edit",
         "tool_use_id": "6abb32a7656810681df3bc2c",
+        "runtime_client": "trae-tob-git-ai",
+        "client_type": "ide",
+        "session_id": "6a85672487ac797223807e7c",
+        "operation_id": "6abb32a7656810681df3bc2c",
+        "edit_kind": "file_edit",
         "source_scene": "agent",
-        "tool_name": "Edit"
+        "external_session_id": "6a85672487ac797223807e7c"
       }
     }
   }
