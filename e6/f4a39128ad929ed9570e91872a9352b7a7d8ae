@@ -1,0 +1,36 @@
+tests/ut/worker/test_model_runner_v2.py
+  s_a2b59fe8334e18::t_37732598f1c3e6 38
+  s_a2b59fe8334e18::t_8bfd362e6cbdcc 16
+  s_a2b59fe8334e18::t_e7f4633ae6ec36 902,917-920
+  s_a2b59fe8334e18::t_6dbd2503a288e3 921-923
+tests/ut/attention/test_seq_lens_requirement.py
+  s_a2b59fe8334e18::t_4891f1225a58f6 154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "e6f4a39128ad929ed9570e91872a9352b7a7d8ae",
+  "prompts": {},
+  "sessions": {
+    "s_a2b59fe8334e18": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a85672487ac797223807e7c",
+        "model": "glm-5.3__max"
+      },
+      "human_author": "XYQ <xiayingqing0928@163.com>",
+      "custom_attributes": {
+        "operation_id": "6abb32a7656810681df3bc2c",
+        "runtime_client": "trae-tob-git-ai",
+        "external_session_id": "6a85672487ac797223807e7c",
+        "source_scene": "agent",
+        "client_type": "ide",
+        "session_id": "6a85672487ac797223807e7c",
+        "edit_kind": "file_edit",
+        "tool_use_id": "6abb32a7656810681df3bc2c",
+        "display_model_name": "GLM-5.3",
+        "tool_name": "Edit"
+      }
+    }
+  }
+}
